@@ -1,0 +1,9 @@
+node_modules/
+package-lock.json
+
+.env
+*.local
+
+*.log
+.DS_Store
+Thumbs.db
