@@ -6,14 +6,13 @@ A modular collection of agent skills, behavioral rules, Model Context Protocol (
 
 ## 📖 Overview
 
-**AgentTools** provides a disciplined operational framework for autonomous AI coding agents. It blends strict single-flow execution, empirical verification gates, lazy senior developer pragmatism ("Ponytail"), concise communication ("Caveman"), and secure terminal execution via MCP.
+**AgentTools** provides a disciplined operational framework for autonomous AI coding agents. It blends strict single-flow execution, empirical verification gates, lazy senior developer pragmatism and high-density concise communication ("Ponytail"), and secure terminal execution via MCP.
 
 ### Core Pillars
 
 - **🛡️ Safe Execution**: Dedicated MCP server (`safe-command-mcp`) allowing autonomous read-only inspection, builds, and test runs without prompting for user confirmation, while blocking destructive operations.
 - **🎯 Single-Flow Execution**: Eliminates chaotic parallel agent loops in favor of ordered, checklist-tracked (`task.md`), single-task-at-a-time execution.
-- **🧘 Ponytail Philosophy**: "Lazy senior developer" engineering ladder—favoring YAGNI, standard libraries, native platform features, zero unnecessary abstractions, and minimal diffs.
-- **⚡ Caveman Communication**: High-density, token-efficient, fluff-free responses that prioritize direct code diffs and concrete answers over filler.
+- **🧘 Ponytail Philosophy & Output Discipline**: "Lazy senior developer" engineering ladder—favoring YAGNI, standard libraries, native platform features, zero unnecessary abstractions, minimal diffs, and terse, high-density responses (code first, answer first, zero fluff).
 - **🔬 Verification Before Completion**: Mandatory empirical proof (test outputs, exit codes, logs) before any task is marked complete.
 
 ---
@@ -24,7 +23,8 @@ A modular collection of agent skills, behavioral rules, Model Context Protocol (
 AgentTools/
 ├── agents/                      # Custom agent persona definitions and reference profiles
 ├── configs/
-│   └── mcp.template.json        # Template configuration for Antigravity MCP registration
+│   ├── mcp_config.template.json # Template configuration for Antigravity MCP registration
+│   └── skills.template.json     # Template configuration for Antigravity skills registration
 ├── mcp/
 │   └── safe-command-mcp/        # Model Context Protocol server for safe command execution
 │       ├── package.json
@@ -33,10 +33,9 @@ AgentTools/
 │   └── AGENTS.md                # System instructions, tool translation, and execution rules
 ├── skills/                      # Modular capability packs for Antigravity agents
 │   ├── brainstorming/           # Requirement & intent exploration before implementation
-│   ├── caveman/                 # High-density, terse communication mode
 │   ├── executing-plans/         # Single-flow execution of written implementation plans
 │   ├── finishing-a-development-branch/ # Structured options for merge, PR, or branch cleanup
-│   ├── ponytail/                # Lazy senior dev mode (minimalism, YAGNI, standard library)
+│   ├── ponytail/                # Lazy senior dev mode & terse communication (minimalism, YAGNI, stdlib)
 │   ├── receiving-code-review/   # Rigorous handling of review feedback
 │   ├── requesting-code-review/  # Code review guidelines and pre-merge verification
 │   ├── single-flow-task-execution/ # Phased task execution with role-based review prompts
@@ -70,24 +69,40 @@ Run the setup script from the root of the repository:
 ```
 
 The script automatically:
-1. Installs npm dependencies for all MCP servers in `mcp/` (such as `safe-command-mcp`).
-2. Registers `safe-command-mcp` into your user Antigravity configuration (`~/.gemini/antigravity-cli/mcp.json`).
-3. Prepares user-level skill directories under `~/.gemini/skills/`.
+1. Installs npm dependencies for all MCP servers in `mcp/` (`safe-command-mcp`).
+2. Registers `safe-commands` into your global Antigravity MCP configuration (`~/.gemini/config/mcp_config.json`), preserving any existing servers.
+3. Registers repository skills into `~/.gemini/config/skills.json` and creates a backward-compatible directory junction at `~/.gemini/skills/`.
+4. Synchronizes global rules into `~/.gemini/config/AGENTS.md`.
 
 ### Manual Configuration
 
-If you prefer to configure Antigravity manually, update your `~/.gemini/antigravity-cli/mcp.json` using the template from `configs/mcp.template.json`:
+If you prefer to configure Antigravity manually:
 
-```json
-{
-  "mcpServers": {
-    "safe-commands": {
-      "command": "node",
-      "args": ["<PATH_TO_AGENT_TOOLS>/mcp/safe-command-mcp/server.js"]
-    }
-  }
-}
-```
+1. **MCP Configuration** (`~/.gemini/config/mcp_config.json`):
+   ```json
+   {
+     "mcpServers": {
+       "safe-commands": {
+         "command": "node",
+         "args": ["<PATH_TO_AGENT_TOOLS>/mcp/safe-command-mcp/server.js"]
+       }
+     }
+   }
+   ```
+
+2. **Skills Configuration** (`~/.gemini/config/skills.json`):
+   ```json
+   {
+     "entries": [
+       {
+         "path": "<PATH_TO_AGENT_TOOLS>/skills"
+       }
+     ]
+   }
+   ```
+
+3. **Global Rules** (`~/.gemini/config/AGENTS.md`):
+   Copy or link `rules/AGENTS.md` to `~/.gemini/config/AGENTS.md`.
 
 ---
 
@@ -116,10 +131,9 @@ Each skill in `skills/` is structured with frontmatter metadata and clear execut
 | Skill | Description | When to Use |
 | :--- | :--- | :--- |
 | **`brainstorming`** | Intent exploration and specification before creative work | Before adding features, changing component behavior, or starting UI design |
-| **`caveman`** | Ultra-terse, token-saving communication mode | When `/caveman`, "be brief", or "less tokens" is requested |
 | **`executing-plans`** | Single-flow execution of structured implementation plans | When an approved implementation plan is ready to be executed |
 | **`finishing-a-development-branch`** | Clean completion, merge, PR creation, or branch cleanup | When all tasks and tests pass and code is ready for integration |
-| **`ponytail`** | Lazy senior developer ladder (YAGNI, stdlib, minimal diffs) | On all coding, refactoring, bug fixing, and dependency decisions |
+| **`ponytail`** | Lazy senior developer ladder (YAGNI, stdlib, minimal diffs) & terse communication | On all coding, refactoring, bug fixing, and dependency decisions; also for brief/concise requests |
 | **`receiving-code-review`** | Objective, evidence-driven evaluation of review feedback | When receiving code review comments before applying suggested changes |
 | **`requesting-code-review`** | Pre-merge review gates and self-inspection | Prior to merging, submitting PRs, or completing major milestones |
 | **`single-flow-task-execution`** | Sequential task runner with spec and quality review gates | Complex, multi-task features needing strict implementation control |
@@ -147,7 +161,8 @@ The `rules/AGENTS.md` file defines the standard operating procedure for agents i
    5. *Does an existing dependency solve it?*
    6. *Can this be one line?*
    7. *Only then: write the minimum necessary code.*
-4. **Evidence-First Verification**: Never say "done" without executing tests and displaying actual command output.
+4. **Ponytail Output Discipline**: Code-first, high-density, concise answers with zero fluff.
+5. **Evidence-First Verification**: Never say "done" without executing tests and displaying actual command output.
 
 ---
 

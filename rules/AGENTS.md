@@ -88,7 +88,7 @@ Not lazy about: understanding the problem (read it fully and trace the real flow
 
 (Yes, this file also applies to agents working on the ponytail repo itself. Especially to them.)
 
-## Terseness / Communication (Caveman)
+## Terseness / Communication (Ponytail Output Discipline)
 
 - Be extremely concise.
 - Eliminate filler, greetings, meta-announcements, and unrequested explanations.

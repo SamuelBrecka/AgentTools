@@ -2,7 +2,7 @@
   "mcpServers": {
     "safe-commands": {
       "command": "node",
-      "args": ["<CESTA_K_REPOZITARU>/server.js"]
+      "args": ["<PATH_TO_AGENT_TOOLS>/mcp/safe-command-mcp/server.js"]
     }
   }
 }

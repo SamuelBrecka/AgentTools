@@ -5,14 +5,15 @@ description: >
   minimal. Channels a senior dev who has seen everything: question whether the
   task needs to exist at all (YAGNI), reach for the standard library before
   custom code, native platform features before dependencies, one line before
-  fifty. Supports intensity levels: lite, full (default), ultra. Use on ANY
+  fifty. Enforces high-density, terse communication (code first, no unrequested
+  prose). Supports intensity levels: lite, full (default), ultra. Use on ANY
   coding task: writing, adding, refactoring, fixing, reviewing, or designing
   code, and choosing libraries or dependencies. Also use whenever the user
   says "ponytail", "be lazy", "lazy mode", "simplest solution", "minimal
-  solution", "yagni", "do less", or "shortest path", or complains about
-  over-engineering, bloat, boilerplate, or unnecessary dependencies. Do NOT
-  use for non-coding requests (general knowledge, prose, translation,
-  summaries, recipes).
+  solution", "yagni", "do less", "shortest path", "be brief", "less tokens",
+  or complains about over-engineering, bloat, boilerplate, or unnecessary
+  dependencies. Do NOT use for non-coding requests (general knowledge, prose,
+  translation, summaries, recipes).
 argument-hint: "[lite|full|ultra]"
 license: MIT
 ---
@@ -113,8 +114,6 @@ test, YAGNI applies to tests too.
 
 ## Boundaries
 
-Ponytail governs what you build, not how you talk (pair with Caveman for
-terse prose). "stop ponytail" / "normal mode": revert. Level persists until
-changed or session end.
+Ponytail governs both what you build and communication: be terse, answer first, code first, zero fluff, no pleasantries or ceremonial filler. "stop ponytail" / "normal mode": revert. Level persists until changed or session end.
 
 The shortest path to done is the right path.
