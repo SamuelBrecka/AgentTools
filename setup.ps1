@@ -3,15 +3,18 @@
 # ==============================================================================
 $ErrorActionPreference = "Stop"
 
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "   Nastavujem prostredie AgentTools    " -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 $RepoRoot = $PSScriptRoot
-Write-Host "Koreň repozitára: $RepoRoot" -ForegroundColor Gray
+Write-Host "Koren repozitara: $RepoRoot" -ForegroundColor Gray
 
 # ------------------------------------------------------------------------------
-# 1. Inštalácia závislostí pre všetky MCP servery
+# 1. Instalacia zavislosti pre vsetky MCP servery
 # ------------------------------------------------------------------------------
 $McpDir = Join-Path $RepoRoot "mcp"
 if (Test-Path $McpDir) {
@@ -20,14 +23,14 @@ if (Test-Path $McpDir) {
         $PackageJson = Join-Path $ServerPath "package.json"
         
         if (Test-Path $PackageJson) {
-            Write-Host "`n[MCP] Inštalujem npm balíčky pre $($_.Name)..." -ForegroundColor Yellow
+            Write-Host "`n[MCP] Instalujem npm balicky pre $($_.Name)..." -ForegroundColor Yellow
             Push-Location $ServerPath
             try {
                 npm install
-                Write-Host "[OK] $($_.Name) je pripravený." -ForegroundColor Green
+                Write-Host "[OK] $($_.Name) je pripraveny." -ForegroundColor Green
             }
             catch {
-                Write-Host "[CHYBA] Nepodarilo sa nainštalovať závislosti pre $($_.Name): $_" -ForegroundColor Red
+                Write-Host "[CHYBA] Nepodarilo sa nainstalovat zavislosti pre $($_.Name): $_" -ForegroundColor Red
             }
             finally {
                 Pop-Location
@@ -35,16 +38,16 @@ if (Test-Path $McpDir) {
         }
     }
 } else {
-    Write-Host "[INFO] Priečinok 'mcp' neexistuje, preskakujem." -ForegroundColor DarkGray
+    Write-Host "[INFO] Priecinok 'mcp' neexistuje, preskakujem." -ForegroundColor DarkGray
 }
 
 # ------------------------------------------------------------------------------
-# 2. Konfigurácia MCP serverov pre Antigravity (~/.gemini/config/mcp_config.json)
+# 2. Konfiguracia MCP serverov pre Antigravity (~/.gemini/config/mcp_config.json)
 # ------------------------------------------------------------------------------
 $GeminiConfigDir = Join-Path $HOME ".gemini\config"
 if (-not (Test-Path $GeminiConfigDir)) {
     New-Item -ItemType Directory -Path $GeminiConfigDir -Force | Out-Null
-    Write-Host "`n[Config] Vytvorený adresár: $GeminiConfigDir" -ForegroundColor Cyan
+    Write-Host "`n[Config] Vytvoreny adresar: $GeminiConfigDir" -ForegroundColor Cyan
 }
 
 $SafeCommandServerJs = (Join-Path $McpDir "safe-command-mcp\server.js").Replace("\", "/")
@@ -65,7 +68,7 @@ if (Test-Path $TargetMcpConfigJson) {
             }
         }
     } catch {
-        Write-Host "[VAROVANIE] Nepodarilo sa prečítať existujúci $TargetMcpConfigJson, vytvorí sa nový: $_" -ForegroundColor Yellow
+        Write-Host "[VAROVANIE] Nepodarilo sa precitat existujuci $TargetMcpConfigJson, vytvori sa novy: $_" -ForegroundColor Yellow
     }
 }
 
@@ -77,23 +80,23 @@ $McpConfigData["mcpServers"] = $McpServersHash
 
 $McpConfigJsonString = $McpConfigData | ConvertTo-Json -Depth 10
 Set-Content -Path $TargetMcpConfigJson -Value $McpConfigJsonString -Encoding UTF8
-Write-Host "`n[Config] MCP server safe-commands zaregistrovaný v: $TargetMcpConfigJson" -ForegroundColor Green
+Write-Host "`n[Config] MCP server safe-commands zaregistrovany v: $TargetMcpConfigJson" -ForegroundColor Green
 
-# Upozornenie na starý nepoužívaný súbor mcp.json
+# Upozornenie na stary nepouzivany subor mcp.json
 $LegacyMcpJson = Join-Path $HOME ".gemini\antigravity-cli\mcp.json"
 if (Test-Path $LegacyMcpJson) {
-    Write-Host "[INFO] Zastaraný konfiguračný súbor $LegacyMcpJson bol nahradený $TargetMcpConfigJson." -ForegroundColor DarkGray
+    Write-Host "[INFO] Zastarany konfiguracny subor $LegacyMcpJson bol nahradeny $TargetMcpConfigJson." -ForegroundColor DarkGray
 }
 
 # ------------------------------------------------------------------------------
-# 3. Registrácia globálnych skillov pre Antigravity (~/.gemini/config/skills.json a ~/.gemini/skills)
+# 3. Registracia globalnych skillov pre Antigravity (~/.gemini/config/skills.json a ~/.gemini/skills)
 # ------------------------------------------------------------------------------
 $SkillsSource = Join-Path $RepoRoot "skills"
 $SkillsSourceNorm = $SkillsSource.Replace("\", "/")
 $TargetSkillsJson = Join-Path $GeminiConfigDir "skills.json"
 
 if (Test-Path $SkillsSource) {
-    # a) Registrácia cez skills.json
+    # a) Registracia cez skills.json
     $SkillsEntries = [System.Collections.ArrayList]@()
     if (Test-Path $TargetSkillsJson) {
         try {
@@ -127,34 +130,34 @@ if (Test-Path $SkillsSource) {
     }
     $SkillsJsonString = $SkillsConfigData | ConvertTo-Json -Depth 10
     Set-Content -Path $TargetSkillsJson -Value $SkillsJsonString -Encoding UTF8
-    Write-Host "`n[Skills] Skilly zaregistrované v: $TargetSkillsJson" -ForegroundColor Green
+    Write-Host "`n[Skills] Skilly zaregistrovane v: $TargetSkillsJson" -ForegroundColor Green
 
-    # b) Link / mirror do ~/.gemini/skills pre spätnú kompatibilitu
+    # b) Link / mirror do ~/.gemini/skills pre spatnu kompatibilitu
     $GeminiSkillsTarget = Join-Path $HOME ".gemini\skills"
     if (-not (Test-Path $GeminiSkillsTarget)) {
         try {
             New-Item -ItemType Junction -Path $GeminiSkillsTarget -Target $SkillsSource | Out-Null
-            Write-Host "[OK] Vytvorený odkaz pre skilly: $GeminiSkillsTarget -> $SkillsSource" -ForegroundColor Green
+            Write-Host "[OK] Vytvoreny odkaz pre skilly: $GeminiSkillsTarget -> $SkillsSource" -ForegroundColor Green
         } catch {
             Copy-Item -Path $SkillsSource -Destination $GeminiSkillsTarget -Recurse -Force
-            Write-Host "[OK] Skilly skopírované do: $GeminiSkillsTarget" -ForegroundColor Green
+            Write-Host "[OK] Skilly skopirovane do: $GeminiSkillsTarget" -ForegroundColor Green
         }
     } else {
-        Write-Host "[Skills] Priečinok alebo odkaz $GeminiSkillsTarget je aktívny." -ForegroundColor Gray
+        Write-Host "[Skills] Priecinok alebo odkaz $GeminiSkillsTarget je aktivny." -ForegroundColor Gray
     }
 }
 
 # ------------------------------------------------------------------------------
-# 4. Globálne pravidlá pre Antigravity (~/.gemini/config/AGENTS.md)
+# 4. Globalne pravidla pre Antigravity (~/.gemini/config/AGENTS.md)
 # ------------------------------------------------------------------------------
 $RulesSource = Join-Path $RepoRoot "rules\AGENTS.md"
 $GlobalRulesTarget = Join-Path $GeminiConfigDir "AGENTS.md"
 
 if (Test-Path $RulesSource) {
     Copy-Item -Path $RulesSource -Destination $GlobalRulesTarget -Force
-    Write-Host "`n[Rules] Globálne pravidlá synchronizované do: $GlobalRulesTarget" -ForegroundColor Green
+    Write-Host "`n[Rules] Globalne pravidla synchronizovane do: $GlobalRulesTarget" -ForegroundColor Green
 }
 
 Write-Host "`n========================================" -ForegroundColor Green
-Write-Host "   Setup bol úspešne dokončený!        " -ForegroundColor Green
+Write-Host "   Setup bol uspesne dokonceny!        " -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
